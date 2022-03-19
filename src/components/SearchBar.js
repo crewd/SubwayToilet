@@ -1,47 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import { BsSearch } from 'react-icons/bs';
 import device from '../style/theme';
 import axios from 'axios';
-import subwayList from '../assets/subwayList.json';
+import { debounce } from 'lodash';
+
 
 const SearchBar = () => {
-  const [searchResult, setSearchResult] = useState("");
+
+  const [searchInput, setSearchInput] = useState('');
+  const [searchValue, setSearchValue] = useState('');
+  const [searchResult, setSearchResult] = useState('');
+  const [searchResultList, setSearchResultList] = useState('');
   // const subwaySearchFilter = subwayList.subwayList_Code.filter(subwayStation => (subwayStation.STIN_NM.includes(searchResult)));
-  const subwaySearchURL = 'http://apis.data.go.kr/1613000/SubwayInfoService/getKwrdFndSubwaySttnList';
-  const serviceKey = '?' + encodeURIComponent('serviceKey') + '=K7ipjTxs8Z85Gk56RmMz2v99E3vIOE5zOBLrrqlO7%2FhLIvY5Mz9GoL%2FVunwaGcy8j%2FxsXuJsWDkaGw0w%2F0cjpw%3D%3D'
+  // const serviceKey = `?${encodeURIComponent('serviceKey')}=K7ipjTxs8Z85Gk56RmMz2v99E3vIOE5zOBLrrqlO7%2FhLIvY5Mz9GoL%2FVunwaGcy8j%2FxsXuJsWDkaGw0w%2F0cjpw%3D%3D`
+  // const subwayAPIUrl = `/data/1613000/SubwayInfoService/getKwrdFndSubwaySttnList${serviceKey}&${encodeURIComponent('_type')}=${encodeURIComponent('json')}&${encodeURIComponent('subwayStationName')}=`
+  const subwayApiUrl = 'http://ec2-54-180-2-124.ap-northeast-2.compute.amazonaws.com:8000/stations/search?query[name]=';
 
   const searchOnChange = (e) => {
-    setSearchResult(e.target.value);
-    axios
-      .get(subwaySearchURL + serviceKey + '&' + encodeURIComponent('_type') + '=' + encodeURIComponent('json') + '&' + encodeURIComponent('subwayStationName') + '=' + encodeURIComponent('서울역'))
-      // 응답(성공)
-      .then(function (response) {
-        console.log(response.body)
-      })
-      // 응답(실패)
-      .catch(function (error) {
-        console.log(error)
-      })
-      // 응답(항상 실행)
-      .then(function () {
-        // ...
-      })
+    setSearchInput(e.target.value);
   }
+
+  const callSubwayListAPI = async (value) => {
+    const subwayData = await axios.get(subwayApiUrl + encodeURIComponent(value));
+    const subwayList = subwayData.data;
+    setSearchResult(subwayList)
+  }
+
+  useEffect(() => {
+    const searchDebounce = setTimeout(() => {
+      if (!searchInput) {
+        setSearchValue('');
+      }
+      setSearchValue(searchInput);
+    }, 200);
+
+    return () => {
+      clearTimeout(searchDebounce);
+    };
+  }, [searchInput])
+
+  useEffect(() => {
+    if (searchValue) {
+      callSubwayListAPI(searchValue);
+    }
+    setSearchResult('')
+  }, [searchValue])
 
   return (
     <SearchWrapper>
       <SearchForm>
-        <SearchInput placeholder="지하철 역을 검색해주세요" onChange={searchOnChange} />
+        <SearchInput placeholder="지하철 역을 검색해주세요" onChange={searchOnChange} value={searchInput} />
         <SearchButton>
           <BsSearch size={21} />
         </SearchButton>
-        {/* {searchResult &&
-          subwaySearchFilter.length > 0 &&
+        {searchValue &&
           <AutoCompletForm>
-            {subwaySearchFilter.map((ss, i) => i < 5 && <p key={i}>{ss.STIN_NM + " " + ss.LN_NM}</p>)}
-          </AutoCompletForm>}
-        {subwaySearchFilter.length === 0 && <AutoCompletForm><p>검색 결과가 없습니다!</p></AutoCompletForm>} */}
+            {searchResult && searchResult.map((result, i) => <p key={i}>{result.name} {result.line}</p>)}
+          </AutoCompletForm>
+        }
       </SearchForm>
     </SearchWrapper >
   )
@@ -104,10 +121,16 @@ const AutoCompletForm = styled.div`
   top: 100%;
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, .3);
   font-size: 16px;
+  min-height: 66px;
   max-height: 216px;
+  overflow: hidden;
   >p {
     padding: 10px 15px;
     box-sizing: border-box;
+    cursor: pointer;
+  }
+  >p:hover {
+    background-color: #EDEDED;
   }
 `
 

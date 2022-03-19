@@ -5,9 +5,11 @@ import App from './pages/App';
 import GlobalStyles from './style/GlobalStyles'
 
 ReactDOM.render(
-  <BrowserRouter>
-    <GlobalStyles />
-    <App />
-  </BrowserRouter>,
+  <React.StrictMode>
+    <BrowserRouter>
+      <GlobalStyles />
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>,
   document.getElementById('root')
 );
