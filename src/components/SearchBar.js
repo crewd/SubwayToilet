@@ -42,10 +42,14 @@ const SearchBar = () => {
 
   useEffect(() => {
     if (searchValue) {
-      callSubwayListAPI(searchValue);
+      return callSubwayListAPI(searchValue);
     }
-    setSearchResult('')
+    return setSearchResult('')
   }, [searchValue])
+
+  useEffect(() => {
+    console.log(searchResult)
+  }, [searchResult])
 
   return (
     <SearchWrapper>
@@ -56,7 +60,11 @@ const SearchBar = () => {
         </SearchButton>
         {searchValue &&
           <AutoCompletForm>
-            {searchResult && searchResult.map((result, i) => <p key={i}>{result.name} {result.line}</p>)}
+            {searchResult && searchResult.length > 0 ? searchResult.map((result, i) => {
+              if (i < 5) {
+                return <p key={i}>{result.name} {result.line}</p>
+              }
+            }) : <p>검색어를 확인해 주세요.</p>}
           </AutoCompletForm>
         }
       </SearchForm>
