@@ -64,7 +64,7 @@ const SearchBar = () => {
               if (i < 5) {
                 return <p key={i}>{result.name} {result.line}</p>
               }
-            }) : <p>검색어를 확인해 주세요.</p>}
+            }) : <p>검색어를 확인해 주세요</p>}
           </AutoCompletForm>
         }
       </SearchForm>
