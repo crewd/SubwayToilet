@@ -47,10 +47,6 @@ const SearchBar = () => {
     return setSearchResult('')
   }, [searchValue])
 
-  useEffect(() => {
-    console.log(searchResult)
-  }, [searchResult])
-
   return (
     <SearchWrapper>
       <SearchForm>
@@ -62,7 +58,7 @@ const SearchBar = () => {
           <AutoCompletForm>
             {searchResult && searchResult.length > 0 ? searchResult.map((result, i) => {
               if (i < 5) {
-                return <p key={i}>{result.name} {result.line}</p>
+                return <p key={i}>{result.stationName} {result.lineName}</p>
               }
             }) : <p>검색어를 확인해 주세요</p>}
           </AutoCompletForm>
@@ -131,7 +127,6 @@ const AutoCompletForm = styled.div`
   font-size: 16px;
   min-height: 66px;
   max-height: 216px;
-  overflow: hidden;
   >p {
     padding: 10px 15px;
     box-sizing: border-box;

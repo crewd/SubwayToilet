@@ -12,6 +12,7 @@ const App = () => {
   useEffect(() => {
     setScreenSize();
   });
+
   return (
     <AppLayout>
       <Routes>

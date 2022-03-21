@@ -6,7 +6,7 @@ import Wrapper from '../components/Wrapper'
 const Home = () => {
   return (
     <HomeWrapper>
-      <Title>타이틀</Title>
+      <Title>지하철 화장실</Title>
       <SearchBar />
     </HomeWrapper>
   )
@@ -23,7 +23,7 @@ const HomeWrapper = styled(Wrapper)`
 `
 const Title = styled.div`
   width: 100%;
-  font-size: 48px;
+  font-size: 36px;
   text-align: center;
 `
 
