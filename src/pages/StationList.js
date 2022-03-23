@@ -1,28 +1,83 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { createRef, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
-import SelectBox from '../components/SelectBox';
+import axios from 'axios';
 
 const StationList = () => {
 
-  const regionOption = [
-    { value: 'seoul', name: '수도권' },
-    { value: 'busan', name: '부산' }
+  const line = [
+    { value: 1, name: '1호선' },
+    { value: 1, name: '2호선' },
+    { value: 1, name: '3호선' },
+    { value: 1, name: '4호선' },
+    { value: 1, name: '5호선' },
+    { value: 1, name: '6호선' },
+    { value: 1, name: '7호선' },
   ]
+
+  const [regionList, setRegionList] = useState();
+  const [lineList, setLineList] = useState();
+  const [countIndex, setCountIndex] = useState(0);
+  const [regionState, setRegionState] = useState('수도권');
+
+  const onClickUnderLine = (i) => {
+    return setCountIndex(i);
+  }
+
+  const onClickSetRegionState = (region) => {
+    setRegionState(region);
+  }
+
+  const regionApiCall = async () => {
+    const region = await axios.get('http://ec2-54-180-2-124.ap-northeast-2.compute.amazonaws.com:8000/regions');
+    setRegionList(region.data);
+  }
+
+  const lineApiCall = async () => {
+    const line = await axios.get('http://ec2-54-180-2-124.ap-northeast-2.compute.amazonaws.com:8000/subway-lines');
+    setLineList(line.data);
+  }
+
+  useEffect(() => {
+    regionApiCall()
+  }, [])
+
+  useEffect(() => {
+    lineApiCall()
+  }, [])
+
+  console.log(lineList)
 
   return (
     <ListWrapper>
       <InnerBox>
-        <RegionSelectDiv>
-          <RegionSelectUl>
-            <li>수도권</li>
-            <li>부산</li>
-            <li>대구</li>
-            <li>대전</li>
-            <li>광주</li>
-          </RegionSelectUl>
-        </RegionSelectDiv>
+        <SelectDiv>
+          <SelectUl>
+            {regionList && regionList.map((region, index) => (
+              <SelectLi
+                key={region.regionCode}
+                onClick={() => (
+                  onClickUnderLine(index),
+                  onClickSetRegionState(region.regionName)
+                )}
+                className={countIndex === index && 'underline'}
+              >
+                {region.regionName}
+              </SelectLi>
+            ))}
+          </SelectUl>
+        </SelectDiv>
+        <br />
+        <SelectDiv>
+          <SelectUl>
+            {lineList.map((line, index) => {
+              if (line.region.regionName === regionState)
+                return <SelectLi>{line.lineName}</SelectLi>
+            })}
+          </SelectUl>
+        </SelectDiv>
       </InnerBox>
-    </ListWrapper>
+    </ListWrapper >
   )
 }
 
@@ -34,32 +89,40 @@ const InnerBox = styled.div`
   width: 50%;
 `
 
-const RegionSelectDiv = styled.div`
+const SelectDiv = styled.div`
   display: flex;
   justify-content: center;
   list-style:none;
 `
 
-const RegionSelectUl = styled.div`
+const SelectUl = styled.ul`
   display: flex;
   justify-content: space-around;
   width: 80%;
-  >li{
-    font-weight: bold;
-    cursor: pointer;
-    padding: 15px 10px;
-    position: relative;
-    ::before{
+`
+
+const SelectLi = styled.li`
+  font-weight: bold;
+  cursor: pointer;
+  padding: 15px 10px;
+  position: relative;
+
+  ::before{
       content: "";
-      height: 3px;
+      height: 5px;
+      width: 0;
       background-color: #aaa;
+      border-radius: 10px;
+      transition: 0.3s;
       position: absolute;
       bottom: 0;
       left: 0;
     }
-  &:active::before,&:hover::before {
-    width: 100%;
-  }
+
+  &.underline {
+    ::before{
+      width: 100%;
+    }
   }
 `
 
