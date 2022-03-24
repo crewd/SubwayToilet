@@ -11,10 +11,7 @@ const SearchBar = () => {
   const [searchInput, setSearchInput] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [searchResult, setSearchResult] = useState('');
-  const [searchResultList, setSearchResultList] = useState('');
   // const subwaySearchFilter = subwayList.subwayList_Code.filter(subwayStation => (subwayStation.STIN_NM.includes(searchResult)));
-  // const serviceKey = `?${encodeURIComponent('serviceKey')}=K7ipjTxs8Z85Gk56RmMz2v99E3vIOE5zOBLrrqlO7%2FhLIvY5Mz9GoL%2FVunwaGcy8j%2FxsXuJsWDkaGw0w%2F0cjpw%3D%3D`
-  // const subwayAPIUrl = `/data/1613000/SubwayInfoService/getKwrdFndSubwaySttnList${serviceKey}&${encodeURIComponent('_type')}=${encodeURIComponent('json')}&${encodeURIComponent('subwayStationName')}=`
   const subwayApiUrl = 'http://ec2-54-180-2-124.ap-northeast-2.compute.amazonaws.com:8000/stations/search?query[name]=';
 
   const searchOnChange = (e) => {

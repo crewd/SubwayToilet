@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 import { createRef, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
 import axios from 'axios';
+import { uniqBy } from 'loadsh';
 
 const StationList = () => {
 
@@ -16,9 +17,10 @@ const StationList = () => {
   ]
 
   const [regionList, setRegionList] = useState();
-  const [lineList, setLineList] = useState();
+  const [lineList, setLineList] = useState([]);
   const [countIndex, setCountIndex] = useState(0);
-  const [regionState, setRegionState] = useState('수도권');
+  const [regionState, setRegionState] = useState();
+  const [lineFilter, setLineFilter] = useState();
 
   const onClickUnderLine = (i) => {
     return setCountIndex(i);
@@ -39,14 +41,27 @@ const StationList = () => {
   }
 
   useEffect(() => {
+    setCountIndex(0)
+  }, [])
+
+
+  useEffect(() => {
+    setRegionState('수도권')
+  }, [])
+
+  useEffect(() => {
     regionApiCall()
   }, [])
 
   useEffect(() => {
     lineApiCall()
-  }, [])
+  }, [regionState])
 
-  console.log(lineList)
+  useEffect(() => {
+    setLineFilter(
+      lineList.filter(subway => (subway.region.regionName.includes(regionState)))
+    )
+  }, [lineList])
 
   return (
     <ListWrapper>
@@ -70,9 +85,10 @@ const StationList = () => {
         <br />
         <SelectDiv>
           <SelectUl>
-            {lineList.map((line, index) => {
-              if (line.region.regionName === regionState)
-                return <SelectLi>{line.lineName}</SelectLi>
+            {lineList && uniqBy(lineFilter, 'lineName').map((line) => {
+              if (line.region.regionName === regionState) {
+                return <SelectLi key={line.id}>{line.lineName}</SelectLi>
+              }
             })}
           </SelectUl>
         </SelectDiv>
@@ -98,7 +114,8 @@ const SelectDiv = styled.div`
 const SelectUl = styled.ul`
   display: flex;
   justify-content: space-around;
-  width: 80%;
+  width: 70%;
+  flex-wrap: wrap;
 `
 
 const SelectLi = styled.li`
