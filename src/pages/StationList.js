@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { createRef, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
+import AccordionMenu from '../components/AccordionMenu'
 import axios from 'axios';
 import { uniqBy } from 'loadsh';
 
@@ -92,6 +93,9 @@ const StationList = () => {
             })}
           </SelectUl>
         </SelectDiv>
+        <ContentContainer>
+          <AccordionMenu />
+        </ContentContainer>
       </InnerBox>
     </ListWrapper >
   )
@@ -99,6 +103,11 @@ const StationList = () => {
 
 const ListWrapper = styled(Wrapper)`
   margin-top: 150px;
+`
+
+const ContentContainer = styled(Wrapper)`
+    margin-top: 50px;
+
 `
 
 const InnerBox = styled.div`
